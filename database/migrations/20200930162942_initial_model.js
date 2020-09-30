@@ -61,11 +61,22 @@ exports.up = function (knex) {
         .inTable("categories")
         .onDelete("CASCADE")
         .onUpdate("CASCADE");
+    })
+    .createTable("user_passwords", (table) => {
+      table.increments("id").primary();
+      table.string("password").notNullable();
+      table
+        .integer("user_id")
+        .references("id")
+        .inTable("users")
+        .onDelete("CASCADE")
+        .onUpdate("CASCADE");
     });
 };
 
 exports.down = function (knex) {
   return knex.schema
+    .dropTableIfExists("user_passwords")
     .dropTableIfExists("ticket_categories")
     .dropTableIfExists("categories")
     .dropTableIfExists("tickets")
