@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 module.exports = {
   addUser,
   findByEmail,
+  findById,
 };
 async function addUser(user) {
   const { first_name, last_name, email, password } = user;
@@ -20,4 +21,12 @@ async function addUser(user) {
 
 async function findByEmail(email) {
   const user = await db("users").where({ email }).first();
+  const [{ password }] = await db("user_passwords").where({ user_id: user.id });
+  return { ...user, password };
+}
+
+async function findById(id) {
+  const user = await db("users").where({ id }).first();
+  console.log(user, "USERRRSSSSS");
+  return user;
 }
