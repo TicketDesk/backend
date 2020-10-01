@@ -9,8 +9,4 @@ services:
     env_file:
       - .env
     working_dir: /home/node/app
-    volumes:
-      - type: bind
-        source: ~/dev/TicketDesk/
-        target: /backend
     command: "npm run server"
