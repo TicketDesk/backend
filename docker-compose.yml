@@ -4,9 +4,10 @@ services:
   app:
     restart: always
     build: .
+    command: "npm install"
     ports:
       - 5000:${PORT}
     env_file:
       - .env
-    working_dir: /home/node/app
+    working_dir: /backend
     command: "npm run server"

@@ -1,13 +1,15 @@
 FROM node:10-alpine
 
-WORKDIR /home/node/app 
+WORKDIR /backend
 
-COPY package.json backend/
+COPY package*.json ./
 
-RUN cd backend && npm install
+RUN npm install
 
-COPY . backend/
+COPY . /backend
 
 EXPOSE 5000
 
-# CMD [ "npm", "run server" ]
+CMD [ "npm", "run", "server" ]
+
+# CMD [ "node", "api/server.js" ]
