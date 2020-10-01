@@ -5,6 +5,10 @@ module.exports = {
   addUser,
   findByEmail,
   findById,
+  updateUserRole,
+  getUserTickets,
+  createTicket,
+  updateTicket,
 };
 async function addUser(user) {
   const { first_name, last_name, email, password } = user;
@@ -12,6 +16,7 @@ async function addUser(user) {
   const new_user = await db("users")
     .insert({ first_name, last_name, email })
     .returning("id");
+
   const user_pw = await db("user_passwords").insert({
     password: hash,
     user_id: new_user[0],
@@ -27,5 +32,32 @@ async function findByEmail(email) {
 
 async function findById(id) {
   const user = await db("users").where({ id }).first();
+  console.log(user, "USERRRSSSSS");
   return user;
+}
+
+function updateUserRole(role, id) {
+  console.log("ROLE", role, "ID", id);
+  return db("users").where({ id }).update({ admin: role });
+}
+
+function getUserTickets(id) {
+  return db("tickets").where({ submitted_by: id });
+}
+
+function createTicket(id, ticketInfo) {
+  return db("tickets").insert({
+    submitted_by: id,
+    description: ticketInfo.description,
+    attempted_solutions: ticketInfo.attempted_solutions,
+    priority_id: ticketInfo.priority_id,
+  });
+}
+
+function updateTicket(id, updates) {
+  delete updates.id;
+  console.log(id, "UPDATES");
+  return db("tickets").where({ id }).update({
+    description: "IF EVERYDAY GOES JUST LIKE THIS, HOW DO WE SURVIVE?",
+  });
 }

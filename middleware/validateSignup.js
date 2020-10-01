@@ -1,6 +1,5 @@
 module.exports = function validateSignup(req, res, next) {
   let userInfo = req.body;
-  console.log("userinfo", userInfo);
   if (
     userInfo &&
     userInfo.first_name &&
