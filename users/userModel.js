@@ -27,6 +27,5 @@ async function findByEmail(email) {
 
 async function findById(id) {
   const user = await db("users").where({ id }).first();
-  console.log(user, "USERRRSSSSS");
   return user;
 }
