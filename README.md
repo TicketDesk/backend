@@ -77,3 +77,15 @@
 #### GET /api/user
 
     -developmental route to test token is validating correctly.
+
+#### GET /api/user/tickets
+
+- resolves to all of a user's tickets
+
+#### POST /api/user/tickets
+
+- Create a new user ticket, see data model for required fields.
+
+#### PUT /api/user/tickets
+
+- Updates fields, make sure column names are correct

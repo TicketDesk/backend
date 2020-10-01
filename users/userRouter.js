@@ -24,8 +24,7 @@ router.post("/tickets", (req, res) => {
     .catch((err) => res.status(500).json({ error: err }));
 });
 
-//PUT update user ticket
-
+//PUT update user tickets
 router.put("/tickets", (req, res) => {
   const { id, updates } = req.body;
 
