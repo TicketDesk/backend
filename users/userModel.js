@@ -56,7 +56,6 @@ function createTicket(id, ticketInfo) {
 
 function updateTicket(id, updates) {
   delete updates.id;
-  console.log(id, "UPDATES");
   return db("tickets").where({ id }).update({
     description: "IF EVERYDAY GOES JUST LIKE THIS, HOW DO WE SURVIVE?",
   });
