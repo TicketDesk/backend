@@ -3,6 +3,7 @@ module.exports = {
   createTicket,
   updateTicket,
   findTicketById,
+  getTicketsByUserId,
 };
 function createTicket(id, ticketInfo) {
   return db("tickets").insert({
@@ -20,4 +21,9 @@ function updateTicket(id, updates) {
 
 function findTicketById(id) {
   return db("tickets").where({ id }).first();
+}
+
+function getTicketsByUserId(id) {
+  console.log(id);
+  return db("tickets").where({ submitted_by: id });
 }
