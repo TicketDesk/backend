@@ -19,7 +19,7 @@ server.use(passport.initialize());
 
 server.use("/api/auth", authRouter);
 server.use(
-  "/api/user",
+  "/api/users",
   passport.authenticate("jwt", { session: false }),
   userRouter
 );

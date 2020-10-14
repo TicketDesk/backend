@@ -13,13 +13,28 @@ router.post("/", (req, res) => {
     .catch((err) => res.status(500).json({ error: err }));
 });
 
+//GET all users tickets
+router.get("/", (req, res) => {
+  const { id } = req.user;
+  Tickets.getTicketsByUserId(id)
+    .then((tickets) => res.status(200).json(tickets))
+    .catch((err) => res.status(500).json({ error: err }));
+});
+
+//GET single ticket by ticket id
+router.get("/:id", (req, res) => {
+  const { id } = req.params;
+  Tickets.findTicketById(id)
+    .then((ticket) => res.status(200).json(ticket))
+    .catch((err) => res.status(500).json({ error: err }));
+});
+
 //PUT update existing tickets
 router.put("/:id/update", async (req, res) => {
   const updates = req.body;
   const { id } = req.params;
   const ticketUserId = await Tickets.findTicketById(id);
-  //   const userId = await Users.findById(ticketUserId.submitted_by);
-  const userId = { email: "cgiroux86@gmail.com" };
+  const userId = await Users.findById(ticketUserId.submitted_by);
 
   Tickets.updateTicket(id, updates)
     .then((updated) => {
@@ -39,8 +54,6 @@ router.put("/:id/update", async (req, res) => {
         );
     })
     .catch((err) => res.status(500).json({ error: err }));
-
-  console.log("USERRR IDDD", userId);
 });
 
 module.exports = router;
