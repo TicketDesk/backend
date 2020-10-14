@@ -8,6 +8,7 @@ require("dotenv").config();
 
 const authRouter = require("../auth/authRouter");
 const userRouter = require("../users/userRouter");
+const TicketRouter = require("../tickets/ticketRouter");
 
 const server = express();
 server.use(helmet());
@@ -21,6 +22,11 @@ server.use(
   "/api/user",
   passport.authenticate("jwt", { session: false }),
   userRouter
+);
+server.use(
+  "/api/tickets",
+  passport.authenticate("jwt", { session: false }),
+  TicketRouter
 );
 server.use(express.static(path.join(__dirname, "public")));
 
