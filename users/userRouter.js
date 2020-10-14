@@ -1,15 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const Users = require("./userModel");
+const Tickets = require("../tickets/ticketModel");
 
 //GET development test route to make sure passport is working correctly
 router.get("/", (req, res) => {
+  console.log("req user", req.user);
   res.status(200).json("token is working in passport");
 });
 
 // GET all of a user's tickets
 router.get("/tickets", (req, res) => {
   const { id } = req.user;
+  console.log("REQ USER", req.user);
+  console.log("ID", id);
   Users.getUserTickets(id)
     .then((tickets) => res.status(200).json(tickets))
     .catch((err) => res.status(500).json({ error: err }));

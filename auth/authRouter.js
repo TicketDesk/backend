@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const validateSignup = require("../middleware/validateSignup");
 const passport = require("passport");
-const bcrypt = require("bcrypt");
 const Users = require("../users/userModel");
 const generateAccessToken = require("../utils/generateAccessToken");
 
@@ -16,8 +15,7 @@ router.post(
   "/login",
   passport.authenticate("login", { session: false }),
   (req, res) => {
-    const { user } = req;
-    console.log("USER ", user);
+    const user = req.user;
     const response = {
       id: user.id,
       first_name: user.first_name,

@@ -13,6 +13,7 @@ const opts = {
 passport.use(
   "jwt",
   new Strategy(opts, function (jwtPayload, verify) {
+    console.log("PAYLOAD", jwtPayload);
     db.findById(jwtPayload.sub)
       .then((user) => {
         if (!user) {

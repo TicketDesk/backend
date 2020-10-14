@@ -26,18 +26,19 @@ async function addUser(user) {
 
 async function findByEmail(email) {
   const user = await db("users").where({ email }).first();
-  const [{ password }] = await db("user_passwords").where({ user_id: user.id });
+  const { password } = await db("user_passwords")
+    .where({ user_id: user.id })
+    .first();
   return { ...user, password };
 }
 
 async function findById(id) {
+  console.log("THIS IS ID", id);
   const user = await db("users").where({ id }).first();
-  console.log(user, "USERRRSSSSS");
   return user;
 }
 
 function updateUserRole(role, id) {
-  console.log("ROLE", role, "ID", id);
   return db("users").where({ id }).update({ admin: role });
 }
 
