@@ -36,6 +36,8 @@ router.get("/all", (req, res) => {
     .then((tickets) => res.status(200).json(tickets))
     .catch((err) => res.status(500).json({ error: err }));
 });
+
+//GET all department names
 router.get("/departments", (req, res) => {
   console.log("HERE WE ARE");
   Tickets.getDepartmentTypes()

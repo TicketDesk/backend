@@ -97,11 +97,10 @@ function createTicketResponse(ticket_id, response, user_id) {
 function getDepartmentTypes() {
   return db.raw("SELECT unnest(enum_range(null::department))").then((resp) => {
     const { rows } = resp;
-    return { departments: rows.map((row) => row.unnest) };
+    return {
+      departments: rows
+        .map((row) => row.unnest)
+        .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)),
+    };
   });
-  //   console.log(types);
-  //   return types;
-  // } catch (err) {
-  //   console.log(err);
-  // }
 }
