@@ -1,21 +1,19 @@
 exports.up = function (knex) {
-  return (
-    knex.schema
-      // .alterTable("users", (table) => {
-      //   table.dropForeign("dept_id");
-      // })
+  return knex.schema
+    .alterTable("users", (table) => {
+      table.dropForeign("dept_id");
+    })
 
-      .alterTable("tickets", (table) => {
-        table.string("more_info");
-        table.dropForeign("dept_id");
-        table.dropColumn("dept_id");
-        table.specificType("department", "department");
-      })
+    .alterTable("tickets", (table) => {
+      table.string("more_info");
+      table.dropForeign("dept_id");
+      table.dropColumn("dept_id");
+      table.specificType("department", "department");
+    })
 
-      .dropTable("departments")
-      .dropTable("ticket_categories")
-      .dropTable("categories")
-  );
+    .dropTable("departments")
+    .dropTable("ticket_categories")
+    .dropTable("categories");
 };
 
 exports.down = function (knex) {
@@ -50,6 +48,9 @@ exports.down = function (knex) {
       table.integer("dept_id").references("id").inTable("departments");
 
       //   table.integer("dept_id").defaultTo(1).alter();
+    })
+    .alterTable("users", (table) => {
+      table.integer("dept_id").references("id").inTable("departments").alter();
     });
 
   // .then(() => {
