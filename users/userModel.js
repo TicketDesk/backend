@@ -9,6 +9,7 @@ module.exports = {
   getUserTickets,
   createTicket,
   updateTicket,
+  getAllUsers,
 };
 async function addUser(user) {
   const { first_name, last_name, email, password } = user;
@@ -60,4 +61,8 @@ function updateTicket(id, updates) {
   return db("tickets").where({ id }).update({
     description: "IF EVERYDAY GOES JUST LIKE THIS, HOW DO WE SURVIVE?",
   });
+}
+
+function getAllUsers() {
+  return db("users");
 }
