@@ -8,7 +8,9 @@ module.exports = {
   deleteTicketByTicketId,
   getTicketResponsesByTicketId,
   createTicketResponse,
+  getDepartmentTypes,
 };
+
 function createTicket(id, ticketInfo) {
   return db("tickets")
     .insert({
@@ -25,8 +27,14 @@ function updateTicket(id, updates) {
   return db("tickets").where({ id }).update(updates);
 }
 
-function findTicketById(id) {
-  return db("tickets").where({ id }).first();
+async function findTicketById(id) {
+  const ticket = await db("tickets").where({ id }).first();
+  const responses = await db("ticket_responses").where({ ticket_id: id });
+
+  return {
+    ticket,
+    responses,
+  };
 }
 
 function getTicketsByUserId(id) {
@@ -40,6 +48,25 @@ function getTicketsByUserId(id) {
   // .select("description");
 }
 
+function getTicketResponses() {
+  return db("ticket_responses")
+    .join("users", "users.id", "ticket_responses.user_id")
+    .select(
+      "users.first_name as from_first",
+      "users.last_name as from_last",
+      "tickets.description",
+      "tickets.attempted_solutions",
+      "tickets.submitted_by",
+      "tickets.status",
+      "tickets.dept_id",
+      "tickets.priority",
+      "tickets.created_at",
+      "tickets.id as ticket_id"
+    )
+    .orderBy("created_at", "desc");
+  // .select("description", "attempted_solutions", "priority", );
+}
+
 function getAllTickets() {
   return db("tickets")
     .leftJoin("users", "users.id", "tickets.assigned_to")
@@ -50,9 +77,10 @@ function getAllTickets() {
       "tickets.attempted_solutions",
       "tickets.submitted_by",
       "tickets.status",
-      "tickets.dept_id",
       "tickets.priority",
       "tickets.created_at",
+      "tickets.more_info",
+      "tickets.department",
       "tickets.id as ticket_id"
     )
     .orderBy("created_at", "desc");
@@ -71,4 +99,13 @@ function createTicketResponse(ticket_id, response, user_id) {
   const post = { ticket_id: +ticket_id, user_id, ...response };
   console.log("POST", post);
   return db("ticket_responses").insert(post);
+}
+
+function getDepartmentTypes() {
+  return db("tickets");
+  //   console.log(types);
+  //   return types;
+  // } catch (err) {
+  //   console.log(err);
+  // }
 }
