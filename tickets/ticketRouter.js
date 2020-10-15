@@ -9,7 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 router.post("/", (req, res) => {
   const { id } = req.user;
   const newTicket = { ...req.body, submitted_by: id };
-  Tickets.createTicket(id, req.body)
+  Tickets.createTicket(newTicket)
     .then(([ticket]) => res.status(201).json(ticket))
     .catch((err) => res.status(500).json({ error: err }));
 });
@@ -37,7 +37,14 @@ router.get("/all", (req, res) => {
     .catch((err) => res.status(500).json({ error: err }));
 });
 
-//GET single ticket by ticket id
+//GET all department names
+router.get("/departments", (req, res) => {
+  console.log("HERE WE ARE");
+  Tickets.getDepartmentTypes()
+    .then((depts) => res.status(200).json(depts))
+    .catch((err) => res.status(500).json({ error: err }));
+});
+// GET single ticket by ticket id
 router.get("/:id", (req, res) => {
   const { id } = req.params;
   Tickets.findTicketById(id)
@@ -45,7 +52,7 @@ router.get("/:id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err }));
 });
 
-//GET single ticket responses by ticket id
+// GET single ticket responses by ticket id
 router.get("/responses/:ticket_id", (req, res) => {
   const { ticket_id } = req.params;
   Tickets.getTicketResponsesByTicketId(ticket_id)
@@ -58,7 +65,8 @@ router.put("/:id/update", async (req, res) => {
   const updates = req.body;
   const { id } = req.params;
   const ticketUserId = await Tickets.findTicketById(id);
-  const userId = await Users.findById(ticketUserId.submitted_by);
+  console.log(ticketUserId);
+  const userId = await Users.findById(ticketUserId.ticket.submitted_by);
 
   Tickets.updateTicket(id, updates)
     .then((updated) => {
@@ -80,7 +88,7 @@ router.put("/:id/update", async (req, res) => {
     .catch((err) => res.status(500).json({ error: err }));
 });
 
-//POST create new response to ticket with ticket id
+// POST create new response to ticket with ticket id
 router.post("/:ticket_id/responses", (req, res) => {
   const { ticket_id } = req.params;
   console.log("USER", req.user.sub, "MESSAGE", req.body);
