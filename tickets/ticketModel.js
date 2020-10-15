@@ -11,15 +11,9 @@ module.exports = {
   getDepartmentTypes,
 };
 
-function createTicket(id, ticketInfo) {
-  return db("tickets")
-    .insert({
-      submitted_by: id,
-      description: ticketInfo.description,
-      attempted_solutions: ticketInfo.attempted_solutions,
-      priority: ticketInfo.priority_id,
-    })
-    .returning("id");
+function createTicket(ticketInfo) {
+  console.log(ticketInfo);
+  return db("tickets").insert(ticketInfo).returning("id");
 }
 
 function updateTicket(id, updates) {
@@ -84,7 +78,6 @@ function getAllTickets() {
       "tickets.id as ticket_id"
     )
     .orderBy("created_at", "desc");
-  // .select("description", "attempted_solutions", "priority", );
 }
 
 function deleteTicketByTicketId(id) {
@@ -102,7 +95,10 @@ function createTicketResponse(ticket_id, response, user_id) {
 }
 
 function getDepartmentTypes() {
-  return db("tickets");
+  return db.raw("SELECT unnest(enum_range(null::department))").then((resp) => {
+    const { rows } = resp;
+    return { departments: rows.map((row) => row.unnest) };
+  });
   //   console.log(types);
   //   return types;
   // } catch (err) {

@@ -9,7 +9,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 router.post("/", (req, res) => {
   const { id } = req.user;
   const newTicket = { ...req.body, submitted_by: id };
-  Tickets.createTicket(id, req.body)
+  Tickets.createTicket(newTicket)
     .then(([ticket]) => res.status(201).json(ticket))
     .catch((err) => res.status(500).json({ error: err }));
 });
@@ -36,7 +36,12 @@ router.get("/all", (req, res) => {
     .then((tickets) => res.status(200).json(tickets))
     .catch((err) => res.status(500).json({ error: err }));
 });
-
+router.get("/departments", (req, res) => {
+  console.log("HERE WE ARE");
+  Tickets.getDepartmentTypes()
+    .then((depts) => res.status(200).json(depts))
+    .catch((err) => res.status(500).json({ error: err }));
+});
 // GET single ticket by ticket id
 router.get("/:id", (req, res) => {
   const { id } = req.params;
@@ -87,13 +92,6 @@ router.post("/:ticket_id/responses", (req, res) => {
   console.log("USER", req.user.sub, "MESSAGE", req.body);
   Tickets.createTicketResponse(ticket_id, req.body, req.user.sub)
     .then((message) => res.status(201).json(message))
-    .catch((err) => res.status(500).json({ error: err }));
-});
-
-router.get("/test", (req, res) => {
-  console.log("HERE WE ARE");
-  Tickets.getDepartmentTypes()
-    .then((depts) => res.status(200).json(depts))
     .catch((err) => res.status(500).json({ error: err }));
 });
 
