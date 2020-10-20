@@ -18,12 +18,41 @@ function createTicket(ticketInfo) {
 
 function updateTicket(id, updates) {
   delete updates.id;
+  console.log("ID", id, "UPDATES", updates);
   return db("tickets").where({ id }).update(updates);
 }
 
 async function findTicketById(id) {
-  const ticket = await db("tickets").where({ id }).first();
-  const responses = await db("ticket_responses").where({ ticket_id: id });
+  const ticket = await db("tickets")
+    .leftJoin("users", "users.id", "tickets.assigned_to")
+
+    .first()
+    .select(
+      "tickets.id as ticket_id",
+      "tickets.description",
+      "tickets.attempted_solutions",
+      "tickets.submitted_by",
+      "tickets.assigned_to",
+      "users.first_name as assigned_first",
+      "users.last_name as assigned_last",
+      "tickets.status",
+      "tickets.priority",
+      "tickets.created_at",
+      "tickets.more_info",
+      "tickets.department"
+    )
+    .where("tickets.id", id);
+  const responses = await db("ticket_responses")
+    .leftJoin("users", "ticket_responses.user_id", "users.id")
+    .where({ ticket_id: id })
+    .select(
+      "ticket_responses.id as response_id",
+      "ticket_responses.message",
+      "ticket_responses.created_at",
+      "ticket_responses.ticket_id",
+      "users.first_name",
+      "users.last_name"
+    );
 
   return {
     ticket,
@@ -32,14 +61,20 @@ async function findTicketById(id) {
 }
 
 function getTicketsByUserId(id) {
-  console.log(id);
-  return (
-    db("tickets")
-      // .leftJoin("ticket_responses", "ticket_responses.ticket_id", "tickets.id")
-      // .leftJoin("users", "users.id", "ticket_responses.user_id")
-      .where({ submitted_by: id })
-  );
-  // .select("description");
+  return db("tickets")
+    .where({ submitted_by: id })
+    .select(
+      "id as ticket_id",
+      "description",
+      "attempted_solutions",
+      "submitted_by",
+      "assigned_to",
+      "status",
+      "priority",
+      "created_at",
+      "more_info",
+      "department"
+    );
 }
 
 function getTicketResponses() {
@@ -58,7 +93,6 @@ function getTicketResponses() {
       "tickets.id as ticket_id"
     )
     .orderBy("created_at", "desc");
-  // .select("description", "attempted_solutions", "priority", );
 }
 
 function getAllTickets() {
@@ -73,6 +107,7 @@ function getAllTickets() {
       "tickets.status",
       "tickets.priority",
       "tickets.created_at",
+      "tickets.assigned_to",
       "tickets.more_info",
       "tickets.department",
       "tickets.id as ticket_id"

@@ -10,13 +10,14 @@ router.post("/", (req, res) => {
   const { id } = req.user;
   const newTicket = { ...req.body, submitted_by: id };
   Tickets.createTicket(newTicket)
-    .then(([ticket]) => res.status(201).json(ticket))
+    .then(([ticket]) => res.status(201).json({ id: ticket }))
     .catch((err) => res.status(500).json({ error: err }));
 });
 
 //GET all users tickets
 router.get("/", (req, res) => {
   const { id } = req.user;
+  console.log("ID", id);
   Tickets.getTicketsByUserId(id)
     .then((tickets) => res.status(200).json(tickets))
     .catch((err) => res.status(500).json({ error: err }));
@@ -26,7 +27,10 @@ router.get("/", (req, res) => {
 router.delete("/:id", (req, res) => {
   const { id } = req.params;
   Tickets.deleteTicketByTicketId(id)
-    .then((deleted) => res.status(204).json(deleted))
+    .then(async (deleted) => {
+      const tickets = await Tickets.getAllTickets();
+      res.status(200).json(tickets);
+    })
     .catch((err) => res.status(500).json({ error: err }));
 });
 
@@ -39,7 +43,6 @@ router.get("/all", (req, res) => {
 
 //GET all department names
 router.get("/departments", (req, res) => {
-  console.log("HERE WE ARE");
   Tickets.getDepartmentTypes()
     .then((depts) => res.status(200).json(depts))
     .catch((err) => res.status(500).json({ error: err }));
@@ -55,7 +58,7 @@ router.get("/:id", (req, res) => {
 // GET single ticket responses by ticket id
 router.get("/responses/:ticket_id", (req, res) => {
   const { ticket_id } = req.params;
-  Tickets.getTicketResponsesByTicketId(ticket_id)
+  Tickets.findTicketById(ticket_id)
     .then((responses) => res.status(200).json(responses))
     .catch((err) => res.status(500).json({ error: err }));
 });
@@ -65,11 +68,10 @@ router.put("/:id/update", async (req, res) => {
   const updates = req.body;
   const { id } = req.params;
   const ticketUserId = await Tickets.findTicketById(id);
-  console.log(ticketUserId);
   const userId = await Users.findById(ticketUserId.ticket.submitted_by);
 
   Tickets.updateTicket(id, updates)
-    .then((updated) => {
+    .then(() => {
       sgMail
         .send({
           to: userId.email,
@@ -80,19 +82,23 @@ router.put("/:id/update", async (req, res) => {
             comment: updates.response,
           },
         })
-        .then((email) => res.status(201).json(email))
+        .then(async (email) => {
+          const updated = await Tickets.findTicketById(id);
+          const tickets = await Tickets.getAllTickets();
+          const obj = { updated, tickets };
+          res.status(201).json(obj);
+        })
         .catch((err) =>
           res.status(500).json({ message: "Could not send.", error: err })
         );
     })
-    .catch((err) => res.status(500).json({ error: err }));
+    .catch((err) => console.log(err));
 });
 
 // POST create new response to ticket with ticket id
 router.post("/:ticket_id/responses", (req, res) => {
   const { ticket_id } = req.params;
-  console.log("USER", req.user.sub, "MESSAGE", req.body);
-  Tickets.createTicketResponse(ticket_id, req.body, req.user.sub)
+  Tickets.createTicketResponse(ticket_id, req.body, req.user.id)
     .then((message) => res.status(201).json(message))
     .catch((err) => res.status(500).json({ error: err }));
 });
