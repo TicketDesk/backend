@@ -1,5 +1,6 @@
 const db = require("../database/dbConfig");
 const bcrypt = require("bcrypt");
+const { findSingleTicket } = require("../tickets/ticketModel");
 
 module.exports = {
   addUser,
@@ -10,6 +11,8 @@ module.exports = {
   createTicket,
   updateTicket,
   getAllUsers,
+  getAssignedTickets,
+  getAllAdmins,
 };
 async function addUser(user) {
   const { first_name, last_name, email, password } = user;
@@ -64,4 +67,12 @@ function updateTicket(id, updates) {
 
 function getAllUsers() {
   return db("users");
+}
+
+function getAllAdmins() {
+  return db("users").where({ admin: true });
+}
+
+function getAssignedTickets(id) {
+  return db("tickets").where({ assigned_to: id });
 }

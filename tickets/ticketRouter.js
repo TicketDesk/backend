@@ -17,7 +17,6 @@ router.post("/", (req, res) => {
 //GET all users tickets
 router.get("/", (req, res) => {
   const { id } = req.user;
-  console.log("ID", id);
   Tickets.getTicketsByUserId(id)
     .then((tickets) => res.status(200).json(tickets))
     .catch((err) => res.status(500).json({ error: err }));
@@ -68,7 +67,7 @@ router.put("/:id/update", async (req, res) => {
   const updates = req.body;
   const { id } = req.params;
   const ticketUserId = await Tickets.findTicketById(id);
-  const userId = await Users.findById(ticketUserId.ticket.submitted_by);
+  const userId = await Users.findById(ticketUserId.submitted_by);
 
   Tickets.updateTicket(id, updates)
     .then(() => {
@@ -96,11 +95,21 @@ router.put("/:id/update", async (req, res) => {
 });
 
 // POST create new response to ticket with ticket id
-router.post("/:ticket_id/responses", (req, res) => {
+router.post("/:ticket_id/responses", async (req, res) => {
   const { ticket_id } = req.params;
-  Tickets.createTicketResponse(ticket_id, req.body, req.user.id)
-    .then((message) => res.status(201).json(message))
-    .catch((err) => res.status(500).json({ error: err }));
+  try {
+    const response = await Tickets.createTicketResponse(
+      ticket_id,
+      req.body,
+      req.user.id
+    );
+    const single_ticket = await Tickets.findTicketById(ticket_id);
+
+    res.status(201).json({ tickets: response, updated: single_ticket });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: err });
+  }
 });
 
 module.exports = router;

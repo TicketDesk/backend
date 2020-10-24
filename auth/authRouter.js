@@ -16,11 +16,13 @@ router.post(
   passport.authenticate("login", { session: false }),
   (req, res) => {
     const user = req.user;
+    console.log("USER", user);
     const response = {
       id: user.id,
       first_name: user.first_name,
       last_name: user.last_name,
       email: user.email,
+      admin: user.admin,
       token: generateAccessToken({
         email: user.email,
         sub: user.id,
