@@ -16,7 +16,6 @@ router.post(
   passport.authenticate("login", { session: false }),
   (req, res) => {
     const user = req.user;
-    console.log("USER", user);
     const response = {
       id: user.id,
       first_name: user.first_name,

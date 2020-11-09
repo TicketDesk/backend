@@ -62,7 +62,7 @@ router.get("/responses/:ticket_id", (req, res) => {
     .catch((err) => res.status(500).json({ error: err }));
 });
 
-//PUT update existing tickets
+//PUT update existing ticket
 router.put("/:id/update", async (req, res) => {
   const updates = req.body;
   const { id } = req.params;
@@ -108,6 +108,21 @@ router.post("/:ticket_id/responses", async (req, res) => {
     res.status(201).json({ tickets: response, updated: single_ticket });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ error: err });
+  }
+});
+
+router.post("/:ticket_id/messages", async (req, res) => {
+  const { ticket_id } = req.params;
+  try {
+    const response = await Tickets.postTicketResponse(
+      ticket_id,
+      req.body,
+      req.user.id
+    );
+    console.log(response);
+    res.status(201).json(response);
+  } catch (err) {
     res.status(500).json({ error: err });
   }
 });

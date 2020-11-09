@@ -10,6 +10,6 @@ COPY . /backend
 
 EXPOSE 5000
 
-CMD [ "npm", "run", "server" ]
+CMD [ "npm", "start" ]
 
 # CMD [ "node", "api/server.js" ]

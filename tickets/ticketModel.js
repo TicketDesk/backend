@@ -10,6 +10,7 @@ module.exports = {
   createTicketResponse,
   getDepartmentTypes,
   findSingleTicket,
+  postTicketResponse,
 };
 
 function createTicket(ticketInfo) {
@@ -185,4 +186,16 @@ function getDepartmentTypes() {
         .sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)),
     };
   });
+}
+
+async function postTicketResponse(ticket_id, response, user_id) {
+  try {
+    const post = { ticket_id: +ticket_id, user_id, ...response };
+    const newResponse = await db("ticket_responses")
+      .insert(post)
+      .returning("*");
+    return newResponse;
+  } catch (err) {
+    return err;
+  }
 }
