@@ -193,8 +193,24 @@ async function postTicketResponse(ticket_id, response, user_id) {
     const post = { ticket_id: +ticket_id, user_id, ...response };
     const newResponse = await db("ticket_responses")
       .insert(post)
-      .returning("*");
-    return newResponse;
+      .returning("id");
+    console.log(newResponse);
+    const responses = await db("ticket_responses")
+      .leftJoin("users", "ticket_responses.user_id", "users.id")
+      .select(
+        "ticket_responses.id as id",
+        "ticket_responses.message",
+        "ticket_responses.created_at",
+        "ticket_responses.updated_at",
+        "ticket_responses.ticket_id",
+        "ticket_responses.user_id",
+        "users.first_name",
+        "users.last_name"
+      )
+      .where("ticket_responses.id", newResponse[0])
+      .first();
+      // .where({ id: newResponse[0] });
+    return responses;
   } catch (err) {
     return err;
   }
