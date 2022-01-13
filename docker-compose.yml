@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  app:
+    restart: always
+    build: .
+    command: "npm install"
+    ports:
+      - 5000:${PORT}
+    env_file:
+      - .env
+    working_dir: /backend
+    command: "npm run server"
